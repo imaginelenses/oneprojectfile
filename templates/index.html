@@ -1,0 +1,121 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Home
+{% endblock %}
+
+{% block sidenav %}
+
+          <!-- Button trigger modal -->
+          <button type="button" class="btn btn-dark btn-block sticky-top" data-toggle="modal" data-target="#staticBackdrop">
+            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="20" fill="currentColor" class="bi bi-plus-square" viewBox="0 0 16 16">
+              <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
+              <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+            </svg>
+            <span class="align-bottom">New Project</span>
+          </button>
+
+          {% if projects %}
+
+            {% for project in projects %}
+
+              <form action="/project_selector" method="post">
+                <input name="id" type="hidden" value={{ project["id"] }}>
+                <input name="name" type="hidden" value={{ project["name"] }}>
+                <button class="btn post-button text-left" type="submit">
+                  <div class="card shadow-sm">
+                    <div class="row no-gutters" style="width: 23.7vw">
+                      <div class="col-md-4">
+                        {% if project["preview"] %}
+                          <div class="embed-responsive embed-responsive-1by1 rounded float-left" style"max-height: 100px;">
+                            {% set temp = "https://drive.google.com/file/d/" ~ project["preview"] ~ "/preview" %}
+                            <iframe src="{{ temp }}"></iframe>
+                          </div>
+                        {% else %}
+                          <div class="rounded float-left" style"max-height: 100px; margin-left: -10%; padding-top: 5px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="120" height="100" fill="currentColor" class="bi bi-image" viewBox="0 0 16 16">
+                              <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
+                              <path d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2h-12zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1h12z"/>
+                            </svg>
+                          </div>
+                        {% endif %}
+                      </div>
+                      <div class="col-md-8">
+                        <div class="card-body">
+                          <h5 class="mb-1">{{ project["name"] }}</h5>
+                          <p class="card-text">
+                            <small class="text-muted">Created {{ project["created"].split()[0] }}</small>
+                            <br>
+                            <small class="text-muted">Last updated {{ project["modified"].split()[0] }}</small>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </button>
+              </form>
+
+            {% endfor %}
+
+          {% else %}
+
+            <span class="align-middle">
+              <div class="text-center text-muted" style="padding-top: 40vh">
+                Create a new project to get started.
+              </div>
+            </span>
+
+          {% endif %}
+
+    </div>
+{% endblock %}
+
+{% block main %}
+
+      <span class="align-middle h5">
+        <div class="text-center text-muted" style="padding-top: 40vh">
+          <p>Version Control for Creative Professionals</p>
+          <p>Free &bull; Open Source</p>
+        </div>
+      </span>
+
+
+      <!-- Modal -->
+      <div class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="staticBackdropLabel">
+                <svg xmlns="http://www.w3.org/2000/svg" width="35" height="25" fill="currentColor" class="bi bi-plus-square" viewBox="0 0 16 16">
+                  <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
+                  <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                </svg>
+                <span class="align-bottom">New Project</span>
+              </h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <form action="/" method="post" enctype="multipart/form-data">
+              <div class="modal-body">
+                <div class="form-group">
+                  <input autocomplete="off" autofocus class="form-control" name="name" placeholder="Untitled Project" required="required" type="text" maxlength="50">
+                </div>
+                <div class="form-group">
+                    <label>Project preview (Optional)</label>
+                    <input name="preview" type="file" class="form-control-file">
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button class="btn btn-primary spinner" type="submit">Create</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+
+{% endblock %}

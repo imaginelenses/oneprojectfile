@@ -1,0 +1,448 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    {{ project_name }}
+{% endblock %}
+
+{% block sidenav %}
+
+          <div class="sticky-top">
+            <button type="button" class="btn btn-dark btn-block dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <svg xmlns="http://www.w3.org/2000/svg" width="35" height="25" fill="currentColor" class="bi bi-diagram-3" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M6 3.5A1.5 1.5 0 0 1 7.5 2h1A1.5 1.5 0 0 1 10 3.5v1A1.5 1.5 0 0 1 8.5 6v1H14a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-1 0V8h-5v.5a.5.5 0 0 1-1 0V8h-5v.5a.5.5 0 0 1-1 0v-1A.5.5 0 0 1 2 7h5.5V6A1.5 1.5 0 0 1 6 4.5v-1zM8.5 5a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1zM0 11.5A1.5 1.5 0 0 1 1.5 10h1A1.5 1.5 0 0 1 4 11.5v1A1.5 1.5 0 0 1 2.5 14h-1A1.5 1.5 0 0 1 0 12.5v-1zm1.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1zm4.5.5A1.5 1.5 0 0 1 7.5 10h1a1.5 1.5 0 0 1 1.5 1.5v1A1.5 1.5 0 0 1 8.5 14h-1A1.5 1.5 0 0 1 6 12.5v-1zm1.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1zm4.5.5a1.5 1.5 0 0 1 1.5-1.5h1a1.5 1.5 0 0 1 1.5 1.5v1a1.5 1.5 0 0 1-1.5 1.5h-1a1.5 1.5 0 0 1-1.5-1.5v-1zm1.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1z"/>
+              </svg>
+              Branch: {{ current_branch["name"] }}
+            </button>
+
+            <div class="dropdown-menu btn-block">
+
+              <!-- Button trigger modal -->
+              <button type="button" class="btn btn-block" data-toggle="modal" data-target="#newBranch">
+                <svg xmlns="http://www.w3.org/2000/svg" width="35" height="25" fill="currentColor" class="bi bi-node-plus" viewBox="0 0 16 16">
+                  <path fill-rule="evenodd" d="M11 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM6.025 7.5a5 5 0 1 1 0 1H4A1.5 1.5 0 0 1 2.5 10h-1A1.5 1.5 0 0 1 0 8.5v-1A1.5 1.5 0 0 1 1.5 6h1A1.5 1.5 0 0 1 4 7.5h2.025zM11 5a.5.5 0 0 1 .5.5v2h2a.5.5 0 0 1 0 1h-2v2a.5.5 0 0 1-1 0v-2h-2a.5.5 0 0 1 0-1h2v-2A.5.5 0 0 1 11 5zM1.5 7a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1z"/>
+                </svg>
+                <span class="align-bottom">New Branch</span>
+              </button>
+              <div class="dropdown-divider"></div>
+
+              {% for branch in branches %}
+                {% if branch["id"] != current_branch["id"] %}
+                  <ul class="list-group">
+                    <form action="/branch_selector" method="post">
+                      <input name="branch_id" type="hidden" value="{{ branch["id"] }}">
+                      <input name="project_id" type="hidden" value="{{ project_id }}">
+                      <input name="project_name" type="hidden" value="{{ project_name }}">
+                      <button class="btn btn-block post-button" type="submit">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                          {{ branch["name"] }}
+                          {% if branch["count"] != 0 %}
+                            <span class="badge badge-primary badge-pill">
+                              {{ branch["count"] }}
+                            </span>
+                          {% endif %}
+                        </li>
+                      </button>
+                    </form>
+                  </ul>
+                {% endif %}
+              {% endfor %}
+
+            </div>
+          </div>
+
+          {% if commits %}
+            <div class="list-group">
+              {% for commit in commits %}
+                {% if commit["id"] == current_commit["id"] %}
+                  <button class="list-group-item list-group-item-action pointer shadow active">
+                    <div class="d-flex w-100 justify-content-between">
+                      <h5 class="mb-1" style="width: 70%; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">{{ commit["message"] }}</h5>
+                      <small>{{ commit["created"].split()[0] }}</small>
+                    </div>
+                    {% if commit["description"] %}
+                      <p class="mb-1" style="text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">{{ commit["description"] }}</p>
+                    {% endif %}
+                  </button>
+                {% else %}
+                  <form action="/commit_selector" method="post">
+                    <input name="commit_id" type="hidden" value="{{ commit["id"] }}">
+                    <input name="current_branch_id" type="hidden" value="{{ current_branch["id"] }}">
+                    <input name="project_id" type="hidden" value="{{ project_id }}">
+                    <input name="project_name" type="hidden" value="{{ project_name }}">
+                    <button class="list-group-item list-group-item-action pointer shadow-sm" type="submit">
+                      <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">{{ commit["message"] }}</h5>
+                        <small>{{ commit["created"].split()[0] }}</small>
+                      </div>
+                      {% if commit["description"] %}
+                        <p class="mb-1">{{ commit["description"] }}</p>
+                      {% endif %}
+                    </button>
+                  </form>
+                {% endif %}
+              {% endfor %}
+            </div>
+          {% else %}
+
+
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-secondary btn-block" data-toggle="modal" data-target="#newCommit">
+              <svg xmlns="http://www.w3.org/2000/svg" width="30" height="20" fill="currentColor" class="bi bi-cloud-arrow-up" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M7.646 5.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 6.707V10.5a.5.5 0 0 1-1 0V6.707L6.354 7.854a.5.5 0 1 1-.708-.708l2-2z"/>
+                <path d="M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383zm.653.757c-.757.653-1.153 1.44-1.153 2.056v.448l-.445.049C2.064 6.805 1 7.952 1 9.318 1 10.785 2.23 12 3.781 12h8.906C13.98 12 15 10.988 15 9.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 4.825 10.328 3 8 3a4.53 4.53 0 0 0-2.941 1.1z"/>
+              </svg>
+              Commit
+            </button>
+
+
+            <span class="align-middle">
+              <div class="text-center text-muted" style="padding-top: 36vh">
+                Commit files to get started.
+              </div>
+            </span>
+          {% endif %}
+
+{% endblock %}
+
+{% block main %}
+
+      <nav class="navbar navbar-expand-lg navbar-light bg-light" style="padding: 0%; margin-bottom: 1%;">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <a class="nav-link" style="padding: 10%;" href="/">
+              <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-arrow-left-short" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5z"/>
+              </svg>
+            </a>
+          </li>
+          <li class="nav-item"><a class="nav-link disabled" href="#">|</a></li>
+          <li class="nav-item">
+            <a class="nav-link active" href="/">{{ project_name }}</a>
+          </li>
+          <li class="nav-item"><a class="nav-link disabled" href="#">/</a></li>
+          <li class="nav-item">
+            <a class="nav-link disabled" href="#">{{ current_branch["name"] }}</a>
+          </li>
+        </ul>
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item active dropdown">
+            <a class="nav-link" href="" id="navbarDropdown" role="button" data-toggle="dropdown">
+              <svg xmlns="http://www.w3.org/2000/svg" width="25" height="19" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4L4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+              </svg>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right">
+              {% if commits %}
+              <!-- Button trigger modal -->
+              <button type="button" class="btn btn-light btn-block" data-toggle="modal" data-target="#delete_commit">
+                Delete Commit
+              </button>
+              {% endif %}
+              <!-- Button trigger modal -->
+              <button type="button" class="btn btn-light btn-block" data-toggle="modal" data-target="#delete_project">
+                Delete Project
+              </button>
+            </div>
+          </li>
+        </ul>
+      </nav>
+
+      {% if commits %}
+        <!-- Modal delete commit -->
+        <div class="modal fade" id="delete_commit" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+              <form action="/delete_commit" method="post">
+                <input name="current_commit_id" type="hidden" value="{{ current_commit['id'] }}">
+                <input name="project_id" type="hidden" value="{{ project_id }}">
+                <input name="project_name" type="hidden" value="{{ project_name }}">
+                <div class="modal-body">
+                  <div class="form-group">
+                    Are you sure you permantely want to delete commit?
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal" autofocus>Cancel</button>
+                  <button class="btn btn-primary spinner" type="submit">Delete</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+
+      <!-- Modal delete project -->
+      <div class="modal fade" id="delete_project" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+          <div class="modal-content">
+            <form action="/delete_project" method="post">
+              <input name="project_id" type="hidden" value="{{ project_id }}">
+              <div class="modal-body">
+                <div class="form-group">
+                  Are you sure you permantely want to delete {{ project_name }}?
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" autofocus>Cancel</button>
+                <button class="btn btn-primary spinner" type="submit">Delete</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      {% if commits and files %}
+
+        <div style="padding-right:3%; padding-left:3%;">
+          <div class="d-flex justify-content-between">
+            <h3 class="mb-1">{{ current_commit["message"] }}</h3>
+            <small>{{ current_commit["created"].split()[0] }}</small>
+          </div>
+          {% if current_commit["description"] %}
+            <p class="h6">{{ current_commit["description"] }}<p>
+          {% endif %}
+        </div>
+
+        <div class="row mx-md-n5">
+          <div class="col px-md-5">
+
+              {% if project_preview %}
+              <div class="embed-responsive embed-responsive-16by9 rounded float-left" style="width: inherit; max-height: 40vh;">
+                {% set temp = "https://drive.google.com/file/d/" ~ project_preview ~ "/preview" %}
+                <iframe src="{{ temp }}" width="640" height="480"></iframe>
+              </div>
+              {% else %}
+              <div class="rounded float-left" style="width: inherit; max-height: 40vh;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="500" height="300" fill="currentColor" class="bi bi-image" viewBox="0 0 16 16">
+                  <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
+                  <path d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2h-12zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1h12z"/>
+                </svg>
+              </div>
+              {% endif %}
+            <div class="btn-group dropright">
+              <button type="button" class="btn btn-sm btn-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="sr-only">Toggle Dropdown</span>
+              </button>
+              <div class="dropdown-menu text-center">
+                <button type="button" class="btn btn-light btn-block" data-toggle="modal" data-target="#update_preview">
+                  Update
+                </button>
+                {% if project_preview %}
+                  <a class="dropdown-item" href="#">Download</a>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <div class="col px-md-5">
+            <div class="scroll">
+            {% for file in files %}
+              <p>
+                <div class="btn-group">
+                  <a class="btn btn-dark text-white file" type="button" role="button" href="{{ url_for('.clone', file_id=file['id']) }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="20" fill="currentColor" class="bi bi-file-earmark-richtext" viewBox="0 0 16 16">
+                      <path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2z"/>
+                      <path d="M4.5 12.5A.5.5 0 0 1 5 12h3a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zm0-2A.5.5 0 0 1 5 10h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zm1.639-3.708l1.33.886 1.854-1.855a.25.25 0 0 1 .289-.047l1.888.974V8.5a.5.5 0 0 1-.5.5H5a.5.5 0 0 1-.5-.5V8s1.54-1.274 1.639-1.208zM6.25 6a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5z"/>
+                    </svg>
+                    <span class="align-bottom">{{ file["name"] }}</span>
+                  </a>
+                  <button type="button" class="btn btn btn-dark dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="sr-only">Toggle Dropdown</span>
+                  </button>
+                  <div class="dropdown-menu dropdown-menu-right text-center">
+                    <a class="dropdown-item" href="{{ url_for('.clone', file_id=file['id']) }}">Clone</a>
+                    <!-- Button trigger modal -->
+                    {% set temp = '#' ~ 'id_' ~ loop.index %}
+                    <button type="button" class="btn btn-light btn-block" data-toggle="modal" data-target="{{ temp }}">
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              </p>
+              <!-- Modal delete file -->
+              {% set temp = 'id_' ~ loop.index %}
+              <div class="modal fade" id="{{ temp }}" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                  <div class="modal-content">
+                    <form action="/delete_file" method="post">
+                      <input name="file_id" type="hidden" value="{{ file['id'] }}">
+                      <input name="current_commit_id" type="hidden" value="{{ current_commit['id'] }}">
+                      <input name="project_id" type="hidden" value="{{ project_id }}">
+                      <input name="project_name" type="hidden" value="{{ project_name }}">
+                      <div class="modal-body">
+                        <div class="form-group">
+                          Are you sure you permantely want to delete {{ file["name"] }}?
+                        </div>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" autofocus>Cancel</button>
+                        <button class="btn btn-primary spinner" type="submit">Delete</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+
+            {% endfor %}
+            </div>
+          </div>
+        </div>
+
+        <br>
+
+        <form action="/clone_commit" method="post">
+          <input name="commit_id" type="hidden" value="{{ current_commit['id'] }}">
+          <input name="project_name" type="hidden" value="{{ project_name }}">
+          <div class="row mx-md-n5">
+            <div class="col px-md-5 text-right">
+            </div>
+            <div class="col px-md-5 text-center align-middle">
+              <button type="submit" class="btn">Clone</button>
+              <!-- Button trigger modal -->
+              <button type="button" class="btn" data-toggle="modal" data-target="#newCommit">
+                Commit
+              </button>
+            </div>
+          </div>
+        </form>
+
+      {% else %}
+
+        <span class="align-middle h5">
+          <div class="text-center text-muted" style="padding-top: 35vh">
+            <p>Version Control for Creative Professionals</p>
+            <p>Free &bull; Open Source</p>
+          </div>
+        </span>
+
+      {% endif %}
+
+        <!-- Modal New Branch -->
+        <div class="modal fade" id="newBranch" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="40" height="30" fill="currentColor" class="bi bi-node-plus" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M11 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM6.025 7.5a5 5 0 1 1 0 1H4A1.5 1.5 0 0 1 2.5 10h-1A1.5 1.5 0 0 1 0 8.5v-1A1.5 1.5 0 0 1 1.5 6h1A1.5 1.5 0 0 1 4 7.5h2.025zM11 5a.5.5 0 0 1 .5.5v2h2a.5.5 0 0 1 0 1h-2v2a.5.5 0 0 1-1 0v-2h-2a.5.5 0 0 1 0-1h2v-2A.5.5 0 0 1 11 5zM1.5 7a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1z"/>
+                  </svg>
+                  <span class="align-bottom">New Branch</span>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <form action="/branch" method="post">
+                <input name="project_id" type="hidden" value="{{ project_id }}">
+                <input name="project_name" type="hidden" value="{{ project_name }}">
+                <div class="modal-body">
+                  <div class="form-group">
+                    <input autocomplete="off" autofocus class="form-control" name="name" placeholder="Experimental" required="required" type="text" maxlength="20">
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                  <button class="btn btn-primary" type="submit">Create</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal New Commit -->
+        <div class="modal fade" id="newCommit" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="40" height="35" fill="currentColor" class="bi bi-cloud-arrow-up" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M7.646 5.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 6.707V10.5a.5.5 0 0 1-1 0V6.707L6.354 7.854a.5.5 0 1 1-.708-.708l2-2z"/>
+                    <path d="M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383zm.653.757c-.757.653-1.153 1.44-1.153 2.056v.448l-.445.049C2.064 6.805 1 7.952 1 9.318 1 10.785 2.23 12 3.781 12h8.906C13.98 12 15 10.988 15 9.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 4.825 10.328 3 8 3a4.53 4.53 0 0 0-2.941 1.1z"/>
+                  </svg>
+                  Upload Files
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <form action="/commit" method="post" enctype="multipart/form-data">
+                <input name="current_branch_id" type="hidden" value="{{ current_branch["id"] }}">
+                <input name="project_id" type="hidden" value="{{ project_id }}">
+                <input name="project_name" type="hidden" value="{{ project_name }}">
+                <div class="modal-body">
+                  {% if commits %}
+                    <div class="form-group">
+                      <span class="align-middle">
+                        <div class="text-center text-muted">
+                          Ensure file names are unchanged from last commit.
+                        </div>
+                      </span>
+                    </div>
+                  {% endif %}
+                  <div class="form-group">
+                    <input name="files" type="file" class="form-control-file" multiple required="required">
+                  </div>
+                  <div class="form-group">
+                    {% if commits %}
+                      <input autocomplete="off" autofocus class="form-control" name="message" placeholder="Commit Message" required="required" type="text" maxlength="50">
+                    {% else %}
+                      <input autocomplete="off" autofocus class="form-control" name="message" placeholder="Commit Message" value="My first commit"  required="required" type="text" maxlength="50">
+                    {% endif %}
+                  </div>
+                  <div class="form-group">
+                    <textarea class="form-control" name="description" placeholder="Description (Optional)" rows="3" maxlength="200"></textarea>
+                  </div>
+                  {% if commits %}
+                    {% if current_commit["id"] != commits[0]["id"] %}
+                      <div class="form-group">
+                        <div class="alerts alert-danger">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="30" height="16" fill="currentColor" class="bi bi-exclamation-triangle" viewBox="0 0 16 16">
+                            <path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/>
+                            <path d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z"/>
+                          </svg>
+                          You are not on the latest version of this project.
+                          Commiting to this version will result in loss of files from subsequent versions.
+                        </div>
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" id="gridCheck" required="required">
+                          <label class="form-check-label" for="gridCheck">
+                            I understand and wish to continue.
+                          </label>
+                        </div>
+                      </div>
+                    {% endif %}
+                  {% endif %}
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                  <button class="btn btn-primary spinner" type="submit">Commit</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal update preview -->
+        <div class="modal fade" id="update_preview" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+              <form action="/update_preview" method="post" enctype="multipart/form-data">
+                <input name="project_id" type="hidden" value="{{ project_id }}">
+                <input name="project_name" type="hidden" value="{{ project_name }}">
+                <div class="modal-body">
+                  <div class="form-group">
+                      <label>Project preview</label>
+                      <input name="file" type="file" class="form-control-file" required="required">
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal" autofocus>Cancel</button>
+                  <button class="btn btn-primary" type="submit">Update</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+{% endblock %}

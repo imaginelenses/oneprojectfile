@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <!-- documentation at http://getbootstrap.com/docs/4.1/, alternative themes at https://bootswatch.com/ -->
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet">
+
+        <!-- https://favicon.io/emoji-favicons/file-folder/ -->
+        <link href="/static/favicon.ico" rel="icon">
+
+        <link href="/static/styles.css" rel="stylesheet">
+
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+
+        <script src="/static/spinner.js"></script>
+
+        <title>OneProjectFile: {% block title %}{% endblock %}</title>
+
+    </head>
+
+    <body>
+        <div class="bg-dark">
+            <nav class="navbar navbar-expand-md navbar-light bg-light border shadow-sm sticky-top">
+                <a class="navbar-brand" href="/"><span class="...">OneProjectFile</span></a>
+                <button aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-target="#navbar" data-toggle="collapse" type="button">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbar">
+                    {% if session.user %}
+                        <ul class="navbar-nav mr-auto mt-2">
+                        </ul>
+                        <ul class="navbar-nav ml-auto mt-2">
+                            <li class="nav-item"><a class="nav-link" href="/logout">Log Out</a></li>
+                            <br>
+                            <li class="nav-item"><img src={{ session['user']['picture'] }}  width="40" height="40" loading="lazy" alt="profile picture" class="rounded"></li>
+                        </ul>
+                    {% else %}
+                        <ul class="navbar-nav ml-auto mt-2">
+                            <li class="nav-item"><a class="nav-link" href="https://accounts.google.com/signup">Create Account</a></li>
+                        </ul>
+                    {% endif %}
+                </div>
+            </nav>
+        </div>
+
+        <main>
+
+            {% if session.user %}
+                <div class="sidenav shadow-sm bg-light border">
+                    {% block sidenav %}{% endblock %}
+                </div>
+
+
+                <div class="main">
+                    {% if get_flashed_messages() %}
+                        <div class="align-middle">
+                            <div class="alert alert-primary alert-dismissible border text-center flash-center" role="alert">
+                                {{ get_flashed_messages() | join(" ") }}
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        </div>
+                    {% endif %}
+                    {% block main %}{% endblock %}
+                </div>
+            {% else %}
+                <div>
+                    {% if get_flashed_messages() %}
+                        <div class="align-middle">
+                            <div class="alert alert-primary alert-dismissible border text-center flash-center" role="alert">
+                                {{ get_flashed_messages() | join(" ") }}
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        </div>
+                    {% endif %}
+                    {% block login %}{% endblock %}
+                </div>
+            {% endif %}
+
+
+        </main>
+
+        {% if session.user %}
+            <footer class="text-muted main footer-padding">
+        {% else %}
+            <footer class="text-muted">
+        {% endif %}
+                <div class="container">
+                    <div class="row">
+                        <div class="col">&copy;&nbsp;<a href="https://imaginelenses.com/">Imaginelenses</a></div>
+                        <div class="col">
+                            <div class="row">
+                                <div class="col"><a href="https://oneprojectfile.imaginelenses.com/docs">Docs</a></div>
+                                <div class="col"><a href="https://oneprojectfile.imaginelenses.com/terms">Terms</a></div>
+                                <div class="col"><a href="https://oneprojectfile.imaginelenses.com/privacy">Privacy</a></div>
+                                <div class="col"><a href="https://github.com/imaginelenses/oneprojectfile">Source</a></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+
+    </body>
+
+</html>

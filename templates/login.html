@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Login
+{% endblock %}
+
+{% block login %}
+
+
+<div class="login">
+  <div style="padding-top: 35vh; padding-left: 5vw">
+      <form action="/login" method="post">
+          <div class="card align-middle shadow-sm rounded" style="width: 25rem;">
+            <div class="card-body">
+              <h5 class="card-title">OneProjectFile</h5>
+              <h6 class="card-subtitle mb-2 text-muted">Version control for creative professionals</h6>
+              <button class="btn btn-primary" type="submit" autofocus>Log In</button>
+              or browse <a href="https://oneprojectfile.imaginelenses.com/docs" class="card-link">documentation</a>
+            </div>
+          </div>
+      </form>
+  </div>
+</div>
+
+
+{% endblock %}
